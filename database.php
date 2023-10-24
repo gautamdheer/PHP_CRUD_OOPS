@@ -30,37 +30,85 @@ class Database{
     
     // function to insert into the database
     public function insert($table, $parms=[]){
-        if($this->tableExists($table)){
+        
+            if($this->tableExists($table)){
 
-            $table_columns = implode(", ", array_keys($parms));
-            $table_value = implode("','", $parms);
+                    // converting query columns and values 
+                    $table_columns = implode(", ", array_keys($parms));
+                    $table_value = implode("','", $parms);
 
-            $sql = "INSERT INTO $table ($table_columns) VALUES ('$table_value')";
+                    $sql = "INSERT INTO $table ($table_columns) VALUES ('$table_value')";
 
-            if($this->mysqli->query($sql)){
-                array_push($this->result, $this->mysqli->insert_id);
-                return true;
+                    // RUN query
+                    if($this->mysqli->query($sql)){
+                        array_push($this->result, $this->mysqli->insert_id);
+                        return true;
+                    }
+                    else{
+                        array_push($this->result, $this->mysqli->error);
+                        return false;
+                    }
+
             }
-            else{
-                array_push($this->result, $this->mysqli->error);
-                return false;
-            }
-
-        }
         
     }
     
     // function to update row in database
-    public function update(){
+    public function update($table, $parms=[],$where=null){
+        
+        if($this->tableExists($table)){
+           
+            // converting query columns and values 
+            $args = [];
+            foreach ($parms as $key => $value) {
+                $args[] = "$key = '$value'";
+            }
+        
+
+            $sql = "UPDATE $table SET ".implode(',',$args);
+            if($where != NULL){
+                $sql.=" WHERE $where";
+            } 
+            // RUN query
+            if($this->mysqli->query($sql)){
+            array_push($this->result, $this->mysqli->affected_rows);
+            return true;
+            }
+            else{
+                array_push($this->result, $this->mysqli->error);
+                return false;
+                }  
+          
+        }
 
     }
     
     // function to delete table or rows from the database
-    public function delete(){
-
+    public function delete($table,$where=null){
+        if($this->tableExists($table)){
+            $sql = "DELETE from $table";
+            if($where != null){
+                $sql .= " WHERE $where ";
+            }
+            else{
+                return false;
+            }
+        // RUN query
+            if($this->mysqli->query($sql)){
+                    array_push($this->result, $this->mysqli->affected_rows);
+            return true;
+            }
+            else
+            {
+                array_push($this->result, $this->mysqli->error);
+                return false;
+            }    
+            }
+        else{
+            return false;
+        }
     }
-
-      
+ 
     // function to select from the database
     public function select(){
 
