@@ -20,10 +20,15 @@ $obj = new Database();
 // echo "Delete result is :";
 // print_r($obj->getResult());
 
-$obj->sql("SELECT * from students");
+// $obj->sql("SELECT * from students");
+
+// echo "SQL result is :";
+// echo "<pre>";
+// print_r($obj->getResult());
+
+$obj->select('students','*',null,null,'',null);
 
 echo "SQL result is :";
 echo "<pre>";
 print_r($obj->getResult());
-
 ?>
